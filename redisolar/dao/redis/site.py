@@ -39,6 +39,12 @@ class SiteDaoRedis(SiteDaoBase, RedisDaoBase):
         # START Challenge #1
         # Remove this line when you've written code to build `site_hashes`.
         site_hashes = []  # type: ignore
+        site_ids_key = self.key_schema.site_ids_key()
+        site_ids = self.redis.smembers(site_ids_key)
+        for site_id in site_ids:
+            hash_key = self.key_schema.site_hash_key(site_id)
+            site_hash = self.redis.hgetall(hash_key)
+            site_hashes.append(site_hash)
         # END Challenge #1
 
         return {FlatSiteSchema().load(site_hash) for site_hash in site_hashes}
